@@ -34,3 +34,39 @@
         - REGEX : `^[가-힣a-zA-Z0-9]{1,10}$`
 - 나이(age)
     - 0 이상 200 이하의 정수
+
+---
+
+pipeline {
+agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'make'
+                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+            }
+        }
+
+        stage('Test') {
+            steps {
+                /* `make check` returns non-zero on test failures,
+                * using `true` to allow the Pipeline to continue nonetheless
+                */
+                sh 'make check || true'
+                junit '**/target/*.xml'
+            }
+        }
+        
+        stage('Deploy') {
+            when {
+              expression {
+                currentBuild.result == null || currentBuild.result == 'SUCCESS'
+              }
+            }
+            steps {
+                sh 'make publish'
+            }
+        }
+    }
+}
