@@ -2,8 +2,6 @@
 
 a
 
-
-
 ## API 명세
 
 애플리케이션 실행 후 `http://localhost:8080/swagger-ui/#/` 페이지에서 API 확인 및 상호작용 가능.
